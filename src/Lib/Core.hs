@@ -72,19 +72,19 @@ findReferenced (x@Ref{destination=t}:xs) tg | t == tg = x : findReferenced xs tg
 findReferenced (x : xs) tg = findReferenced xs tg
 
 -- Given a list of objects, return all Labels with the given name (exact match)
-findNameExact :: [Obj] -> String -> Maybe Obj
-findNameExact [] t = Nothing
-findNameExact (x@Label{name=n}:xs) nm | nm == n = Just x
-findNameExact (x : xs) nm = findNameExact xs nm
+findByNameExact :: [Obj] -> String -> Maybe Obj
+findByNameExact [] t = Nothing
+findByNameExact (x@Label{name=n}:xs) nm | nm == n = Just x
+findByNameExact (x : xs) nm = findByNameExact xs nm
 
 -- Given a list of objects, return all Labels where the input is a substring of the name
-findNamesSub :: [Obj] -> String -> [Obj]
-findNamesSub [] t = []
-findNamesSub (x@Label{name=n}:xs) nm | nm `isInfixOf` n = x : findNamesSub xs nm
-findNamesSub (x : xs) nm = findNamesSub xs nm
+findByNameSub :: [Obj] -> String -> [Obj]
+findByNameSub [] t = []
+findByNameSub (x@Label{name=n}:xs) nm | nm `isInfixOf` n = x : findByNameSub xs nm
+findByNameSub (x : xs) nm = findByNameSub xs nm
 
 -- Given a list of objects, return all labels where the description contains the input
-findDescrSub :: [Obj] -> String -> [Obj]
-findDescrSub [] t = []
-findDescrSub (x@Label{description=n}:xs) d | d `isInfixOf` n = x : findDescrSub xs d
-findDescrSub (x : xs) d = findDescrSub xs d
+findByDescrSub :: [Obj] -> String -> [Obj]
+findByDescrSub [] t = []
+findByDescrSub (x@Label{description=n}:xs) d | d `isInfixOf` n = x : findByDescrSub xs d
+findByDescrSub (x : xs) d = findByDescrSub xs d
