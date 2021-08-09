@@ -5,18 +5,18 @@ import qualified Data.ByteString.Lazy as BL
 import qualified Data.ByteString as B
 import Data.Aeson
 
-getLastTag :: IO Tag
-getLastTag = do
+getData :: IO [Obj]
+getData = do
     f <- B.readFile "index.json"
-    print f
-    case decode (BL.fromStrict f) :: Maybe [Obj] of
-        Just l -> return $ foldl (\(Tag t) x -> Tag (max t (tagToInt $ tag x))) (Tag 0) l
-        Nothing -> return $ Tag (-255)
+    let Just d = decode (BL.fromStrict f)
+    return d
+
+getLastTag :: IO Tag
+getLastTag = do foldl (\ (Tag t) x -> Tag (max t (tagToInt $ tag x))) (Tag 0) <$> getData
 
 addObj :: Obj -> IO ()
 addObj o = do
-    f <- B.readFile "index.json"
-    let Just d = decode (BL.fromStrict f) :: Maybe [Obj]
+    d <- getData
     B.writeFile "index.json" $ BL.toStrict $ encode (d ++ [o])
 
 addLabel :: String -> String -> String -> String -> String -> IO ()
@@ -33,16 +33,14 @@ addRef co pg de = do
 
 findTag :: String -> IO ()
 findTag t = do
-    f <- B.readFile "index.json"
-    let Just d = decode (BL.fromStrict f) :: Maybe [Obj]
+    d <- getData
     case findByTag d (ofHex t) of
       Nothing -> putStrLn "No such tag found."
       Just obj -> print obj
 
 deleteTag :: String -> IO ()
-deleteTag t = do    
-    f <- B.readFile "index.json"
-    let Just d = decode (BL.fromStrict f) :: Maybe [Obj]
+deleteTag t = do
+    d <- getData
     case findByTag d (ofHex t) of
       Nothing -> putStrLn "No such tag found."
       Just obj -> do 

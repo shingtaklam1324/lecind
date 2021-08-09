@@ -10,7 +10,7 @@ mainAux ["al", co, pg, ty, nm, de] = addLabel co pg ty nm de
 mainAux ["ar", co, pg, de] = addRef co pg de
 mainAux ["ft", tg] = findTag tg
 mainAux ["d", tg] = deleteTag tg
-mainAux _ = error "unrecognized command"
+mainAux _ = fail "unrecognized command"
 
 mainFunc :: IO ()
 mainFunc = do
