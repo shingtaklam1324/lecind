@@ -21,7 +21,7 @@ nextTag :: Tag -> Tag
 nextTag (Tag t) = Tag (t + 1)
 
 instance Show Tag where
-    show (Tag n) = printf "%04x" n
+    show (Tag n) = printf "%05x" n
 
 ofHex :: String -> Tag
 ofHex s = case readHex s of
