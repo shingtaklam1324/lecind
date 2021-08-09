@@ -1,9 +1,7 @@
 module Lib where
 
-import Lib.Core
 import Lib.IO
 import System.Environment (getArgs)
-import Data.Aeson
 
 mainAux :: [String] -> IO ()
 mainAux ["al", co, pg, ty, nm, de] = addLabel co pg ty nm de
