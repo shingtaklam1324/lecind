@@ -1,3 +1,4 @@
+{-# LANGUAGE LambdaCase #-}
 module Lib.IO where
 
 import Lib.Core
@@ -12,7 +13,7 @@ getData = do
     return d
 
 getLastTag :: IO Tag
-getLastTag = do foldl (\ (Tag t) x -> Tag (max t (tagToInt $ tag x))) (Tag 0) <$> getData
+getLastTag = do foldl (\(Tag t) x -> Tag (max t (tagToInt $ tag x))) (Tag 0) <$> getData
 
 addObj :: Obj -> IO ()
 addObj o = do
@@ -47,8 +48,16 @@ deleteTag t = do
         putStrLn $ "Object found: " ++ show obj ++ "\nConfirm Delete y/[n]:"
         c <- getLine
         if c == "y" then do
-            let d' = filter (\o -> tag o /= ofHex t) d
+            putStrLn "Tag deleted. Delete references to this tag [y]/n?"
+            c' <- getLine
+            d' <-
+                if c' == "n" then do
+                    putStrLn "No references deleted. Note that there may now be references that point to nonexistent tags."
+                    return $ filter (\o -> tag o /= ofHex t) d
+                else do
+                    return $ filter (\o -> tag o /= ofHex t && (case o of
+                        Label{} -> True
+                        Ref{destination = tg} -> tg /= ofHex t)) d
             B.writeFile "index.json" $ BL.toStrict $ encode d'
-            putStrLn $ "Tag deleted."
         else
             putStrLn "Deletion aborted."

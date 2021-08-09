@@ -61,30 +61,30 @@ instance FromJSON Obj where
 -- Given a list of objects, return the one with the given tag.
 findByTag :: [Obj] -> Tag -> Maybe Obj
 findByTag [] t                                     = Nothing
-findByTag (x@(Label _ _ t _ _ _ ):xs) tg | t == tg = Just x
-findByTag (x@(Ref _ _ t _):xs) tg        | t == tg = Just x
+findByTag (x@Label{tag=t}:xs) tg | t == tg = Just x
+findByTag (x@Ref{tag=t}:xs) tg        | t == tg = Just x
 findByTag (x : xs) tg                              = findByTag xs tg
 
 -- Given a list of objects, return all Refs which link to the given tag.
 findReferenced :: [Obj] -> Tag -> [Obj]
 findReferenced [] t = []
-findReferenced (x@(Ref _ _ _ t):xs) tg | t == tg = x : findReferenced xs tg
+findReferenced (x@Ref{destination=t}:xs) tg | t == tg = x : findReferenced xs tg
 findReferenced (x : xs) tg = findReferenced xs tg
 
 -- Given a list of objects, return all Labels with the given name (exact match)
 findNameExact :: [Obj] -> String -> Maybe Obj
 findNameExact [] t = Nothing
-findNameExact (x@(Label _ _ _ _ n _):xs) nm | nm == n = Just x
+findNameExact (x@Label{name=n}:xs) nm | nm == n = Just x
 findNameExact (x : xs) nm = findNameExact xs nm
 
 -- Given a list of objects, return all Labels where the input is a substring of the name
 findNamesSub :: [Obj] -> String -> [Obj]
 findNamesSub [] t = []
-findNamesSub (x@(Label _ _ _ _ n _):xs) nm | nm `isInfixOf` n = x : findNamesSub xs nm
+findNamesSub (x@Label{name=n}:xs) nm | nm `isInfixOf` n = x : findNamesSub xs nm
 findNamesSub (x : xs) nm = findNamesSub xs nm
 
 -- Given a list of objects, return all labels where the description contains the input
 findDescrSub :: [Obj] -> String -> [Obj]
 findDescrSub [] t = []
-findDescrSub (x@(Label _ _ _ _ _ n):xs) d | d `isInfixOf` n = x : findDescrSub xs d
+findDescrSub (x@Label{description=n}:xs) d | d `isInfixOf` n = x : findDescrSub xs d
 findDescrSub (x : xs) d = findDescrSub xs d
